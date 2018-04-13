@@ -7,6 +7,17 @@ const queryString = require('querystring');
 
 let app = express();
 
+/**
+ * 数据库创建过程。 
+ * 1.创建wenrj数据库
+ * create database wenrj; 
+ * 2.进入wenrj 数据库
+ * use wenrj;   
+ * 3.创建user_info数据表，包含用户名和密码两个字段，用户名唯一。
+ * create table user_info(user_name varchar(8), user_password(16), contraine unique(user_name));
+ * 
+ */
+
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
