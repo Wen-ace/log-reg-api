@@ -15,9 +15,19 @@ let app = express();
  * use wenrj;   
  * 3.创建user_info数据表，包含用户名和密码两个字段，用户名唯一。
  * create table user_info(user_name varchar(8), user_password(16), contraine unique(user_name));
+ * 4.创建foul_data数据表，包含id int not null,tag varchar(20),name_zh varchar(20),name_en varchar(40),url varchar(100)
+ * create table foul_data(
+ *     uid int not null atuo_increment,
+ *     tag varchar(20),
+ *     name_zh varchar(20),
+ *     name_en varchar(40),
+ *     url varchar(100),   //保存域名之后的path
+ *     primary key(uid),
+ *     unique key(tag, name_zh),
+ *     unique key(tag, name_en)
+ * )
  * 
  */
-
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -25,7 +35,11 @@ const connection = mysql.createConnection({
     database: 'wenrj'
 });
 connection.connect();
-
+connection.query('create table if not exists `user_info`(user_name varchar(8), user_password varchar(16), unique key(user_name))');
+connection.query('create table if not exists `foul_data`(' +
+'uid int not null auto_increment, tag varchar(20), name_zh varchar(20), name_en varchar(40), url varchar(100),' +
+'primary key(uid), unique key(tag, name_zh), unique key(tag, name_en)' +
+')');
 app.get('/', (req, res) => {
     let obj = {
         code: 1,
