@@ -57,6 +57,7 @@ app.post('/login', (req, res, next) => {
             next();
         } else if (!req.body.user_password) {
             rd = {
+                code: 0,
                 msg: "user_password can't empty!"
             };
             res.json(rd);
@@ -64,7 +65,7 @@ app.post('/login', (req, res, next) => {
         } else {
             connection.query('select * from user_info where user_name=?', req.body.user_name, (err, result) => {
                 if (err) {
-                    rd = err;
+                    rd = {code: 0,...err};
                 } else {
                     let result_json = result[0];
                     console.log(result_json);
@@ -106,18 +107,21 @@ app.post('/reg', (req, res, next) => {
             next();
         } else if (!req.body.user_password) {
             rd = {
+                code: 0,
                 msg: "user_password can't empty!"
             };
             res.json(rd);
             next();
         } else if (req.body.user_name.length >= 8) {
             rd = {
+                code: 0,
                 msg: "user_name is too long,can't exceeds 8 byte!"
             };
             res.json(rd);
             next();
         } else if (req.body.user_password.length >= 16) {
             rd = {
+                code: 0,
                 msg: "user_password is too long,can't exceeds 16 byte!"
             };
             res.json(rd);
