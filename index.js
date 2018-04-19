@@ -37,9 +37,9 @@ const connection = mysql.createConnection({
 connection.connect();
 connection.query('create table if not exists `user_info`(user_name varchar(8), user_password varchar(16), unique key(user_name))');
 connection.query('create table if not exists `foul_data`(' +
-'uid int not null auto_increment, tag varchar(20), name_zh varchar(20), name_en varchar(40), url varchar(100),' +
-'primary key(uid), unique key(tag, name_zh), unique key(tag, name_en)' +
-')');
+    'uid int not null auto_increment, tag varchar(20), name_zh varchar(20), name_en varchar(40), url varchar(100),' +
+    'primary key(uid), unique key(tag, name_zh), unique key(tag, name_en)' +
+    ')');
 app.get('/', (req, res) => {
     let obj = {
         code: 1,
@@ -79,8 +79,20 @@ app.post('/login', (req, res, next) => {
         } else {
             connection.query('select * from user_info where user_name=?', req.body.user_name, (err, result) => {
                 if (err) {
-                    rd = {code: 0,...err};
+                    rd = {
+                        code: 0,
+                        ...err
+                    };
                 } else {
+                    if (!result || !result[0]) {
+                        rd = {
+                            code: 1,
+                            msg: 'the user_name desn\'t exist!'
+                        }
+                        res.json(rd);
+                        next();
+                        return false;
+                    }
                     let result_json = result[0];
                     console.log(result_json);
                     if (req.body.user_password != result_json.user_password) {
@@ -140,23 +152,21 @@ app.post('/reg', (req, res, next) => {
             };
             res.json(rd);
             next();
-        }
-        else {
+        } else {
             connection.query('insert into user_info (user_name, user_password) values (?, ?)', [req.body.user_name, req.body.user_password], (err, result) => {
                 if (err) {
-                    console.log('err --> ',err);
-                    if (err.code.toUpperCase() == 'ER_DUP_ENTRY'){
+                    console.log('err --> ', err);
+                    if (err.code.toUpperCase() == 'ER_DUP_ENTRY') {
                         rd = {
                             code: 0,
                             msg: 'the user_name already exists!'
                         };
+                    } else {
+                        rd = err;
                     }
-                    else {
-                      rd = err;
-                    }
-                    
+
                 } else {
-                    console.log('result --> ',result);
+                    console.log('result --> ', result);
                     rd = {
                         code: 1,
                         msg: 'success'
